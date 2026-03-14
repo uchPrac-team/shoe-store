@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление заказами</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1>Управление заказами</h1>
+            <div class="admin-nav">
+                <a href="/catalog" class="btn">Каталог</a>
+                {% if is_admin %}
+                <a href="/orders/create" class="btn btn-primary">+ Новый заказ</a>
+                {% endif %}
+                <a href="/logout" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>№ заказа</th>
+                    <th>Клиент</th>
+                    <th>Дата заказа</th>
+                    <th>Дата доставки</th>
+                    <th>Пункт выдачи</th>
+                    <th>Сумма</th>
+                    <th>Статус</th>
+                    <th>Код получения</th>
+                    <th>Просмотр</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.order_number }}</td>
+                    <td>{{ order.client_name or 'Не указан' }}</td>
+                    <td>{{ order.order_date[:10] }}</td>
+                    <td>{{ order.delivery_date or 'Не указана' }}</td>
+                    <td>{{ order.pickup_address or 'Не указан' }}</td>
+                    <td>{{ order.total|round(2) }} ₽</td>
+                    <td>
+                        <form action="/orders/status/{{ order.id }}" method="POST" style="display: inline;">
+                            <select name="status" onchange="this.form.submit()" 
+                                    {% if not is_admin and order.status == 'Завершен' %}disabled{% endif %}>
+                                <option value="Новый" {% if order.status == 'Новый' %}selected{% endif %}>Новый</option>
+                                <option value="Завершен" {% if order.status == 'Завершен' %}selected{% endif %}>Завершен</option>
+                                <option value="Отменен" {% if order.status == 'Отменен' %}selected{% endif %}>Отменен</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td>{{ order.pickup_code }}</td>
+                    <td>
+                        <a href="/orders/{{ order.id }}" class="btn-view">👁️</a>
+                        {% if is_admin %}
+                        <a href="/orders/edit/{{ order.id }}" class="btn-edit">✏️</a>
+                        <a href="/orders/delete/{{ order.id }}" 
+                           class="btn-delete" 
+                           onclick="return confirm('Удалить заказ?')">🗑️</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

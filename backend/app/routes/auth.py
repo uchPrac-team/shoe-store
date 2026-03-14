@@ -52,9 +52,9 @@ def login():
         session['user_role'] = user['role']
         
         if user['role'] == 'Администратор':
-            return redirect('/admin/products')
+            return redirect('/admin/products')  
         elif user['role'] == 'Менеджер':
-            return redirect('/manager')
+            return redirect('/orders')
         else:
             return redirect('/catalog')
             

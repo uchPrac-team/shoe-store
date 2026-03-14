@@ -8,10 +8,12 @@ def create_app():
     
     from app.routes.auth import auth_bp
     from app.routes.products import products_bp
-    from app.routes.admin_products import admin_products_bp  
+    from app.routes.admin_products import admin_products_bp
+    from app.routes.orders import orders_bp  
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(products_bp)
-    app.register_blueprint(admin_products_bp)  
+    app.register_blueprint(admin_products_bp)
+    app.register_blueprint(orders_bp)  
     
     return app

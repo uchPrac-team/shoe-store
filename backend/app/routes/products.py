@@ -59,11 +59,3 @@ def catalog():
     except Exception as e:
         return f"Ошибка загрузки товаров: {str(e)}"
 
-# Временные заглушки для страниц админа и менеджера
-@products_bp.route('/admin')
-def admin():
-    return "Страница администратора (в разработке)"
-
-@products_bp.route('/manager')
-def manager():
-    return "Страница менеджера (в разработке)"
