@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог товаров - ООО "Обувь"</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="catalog-container">
+        <!-- Шапка -->
+        <div class="header">
+            <img src="/static/logo.png" alt="ООО Обувь" class="logo">
+            <h1>ООО "Обувь" - Каталог товаров</h1>
+            <div class="user-info">
+                <span>Вы вошли как: <strong>{{ role }}</strong></span>
+                <a href="/logout" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+
+        <!-- Фильтры (только для менеджера и админа) -->
+        {% if role in ['Менеджер', 'Администратор'] %}
+        <div class="filters">
+            <form method="GET" action="/catalog">
+                <div class="filter-group">
+                    <input type="text" name="search" placeholder="Поиск по названию" 
+                           value="{{ current_search }}" class="search-input">
+                    
+                    <select name="category" class="filter-select">
+                        <option value="">Все категории</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if cat == current_category %}selected{% endif %}>
+                            {{ cat }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="sort" class="filter-select">
+                        <option value="name" {% if current_sort == 'name' %}selected{% endif %}>
+                            По названию
+                        </option>
+                        <option value="price" {% if current_sort == 'price' %}selected{% endif %}>
+                            По цене
+                        </option>
+                        <option value="discount" {% if current_sort == 'discount' %}selected{% endif %}>
+                            По скидке
+                        </option>
+                    </select>
+                    
+                    <button type="submit" class="btn-filter">Применить</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- Список товаров -->
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card" {% if product.discount > 15 %}style="background-color: #2E8B57;"{% endif %}>
+                <div class="product-image">
+                    {% if product.photo %}
+                    <img src="/static/images/{{ product.photo }}" alt="{{ product.name }}">
+                    {% else %}
+                    <div class="no-image">Нет фото</div>
+                    {% endif %}
+                </div>
+                
+                <div class="product-info">
+                    <h3>{{ product.name }}</h3>
+                    <p class="article">Артикул: {{ product.article }}</p>
+                    <p class="category">{{ product.category }}</p>
+                    
+                    <div class="price-block">
+                        <span class="price">{{ product.price }} ₽</span>
+                        {% if product.discount > 0 %}
+                        <span class="discount">-{{ product.discount }}%</span>
+                        {% endif %}
+                    </div>
+                    
+                    <p class="stock">В наличии: {{ product.stock }} шт.</p>
+                    
+                    {% if product.description %}
+                    <p class="description">{{ product.description[:50] }}...</p>
+                    {% endif %}
+                    
+                    <!-- Кнопки для администратора -->
+                    {% if role == 'Администратор' %}
+                    <div class="admin-actions">
+                        <button class="btn-edit">✏️ Редактировать</button>
+                        <button class="btn-delete">🗑️ Удалить</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
