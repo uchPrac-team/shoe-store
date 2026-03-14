@@ -58,10 +58,10 @@
             {% for product in products %}
             <div class="product-card" {% if product.discount > 15 %}style="background-color: #2E8B57;"{% endif %}>
                 <div class="product-image">
-                    {% if product.photo %}
+                    {% if product.photo and product.photo != 'null' and product.photo != '' %}
                     <img src="/static/images/{{ product.photo }}" alt="{{ product.name }}">
                     {% else %}
-                    <div class="no-image">Нет фото</div>
+                    <img src="/static/images/no-image.png" alt="Нет изображения" class="default-image">
                     {% endif %}
                 </div>
                 

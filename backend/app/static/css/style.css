@@ -299,3 +299,10 @@ body {
     background-color: #ff4444;
     color: white;
 }
+
+.default-image {
+    opacity: 0.7;
+    filter: grayscale(50%);
+    object-fit: contain;
+    padding: 20px;
+}
