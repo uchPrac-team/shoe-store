@@ -85,10 +85,12 @@
                     
                     <!-- Кнопки для администратора -->
                     {% if role == 'Администратор' %}
-                    <div class="admin-actions">
-                        <button class="btn-edit">✏️ Редактировать</button>
-                        <button class="btn-delete">🗑️ Удалить</button>
-                    </div>
+                <div class="admin-actions">
+                    <a href="/admin/products/edit/{{ product.id }}" class="btn-edit">✏️ Редактировать</a>
+                    <a href="/admin/products/delete/{{ product.id }}" 
+                    class="btn-delete" 
+                    onclick="return confirm('Удалить товар?')">🗑️ Удалить</a>
+                </div>
                     {% endif %}
                 </div>
             </div>

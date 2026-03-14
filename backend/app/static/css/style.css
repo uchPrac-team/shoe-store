@@ -306,3 +306,90 @@ body {
     object-fit: contain;
     padding: 20px;
 }
+
+/* Админ панель */
+.admin-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.admin-nav {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.products-table th {
+    background-color: var(--secondary-bg);
+    padding: 10px;
+    text-align: left;
+}
+
+.products-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.table-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.no-image-small {
+    width: 50px;
+    height: 50px;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #999;
+}
+
+.discount-badge {
+    background-color: #ff4444;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.flash-message {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.form-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.current-photo {
+    margin-top: 10px;
+}
