@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - ООО "Обувь"{% endblock %}
+
+{% block content %}
+<div class="product-detail-container">
+    <!-- Навигация -->
+    <div class="product-detail-nav">
+        <a href="/catalog" class="back-to-catalog">← Назад в каталог</a>
+    </div>
+
+    <!-- Карточка товара -->
+    <div class="product-detail-card">
+        <!-- Левая колонка с фото -->
+        <div class="product-detail-image">
+            {% if product.photo %}
+            <img src="/static/images/{{ product.photo }}" alt="{{ product.name }}">
+            {% else %}
+            <div class="no-image-large">📷 Нет фотографии</div>
+            {% endif %}
+        </div>
+
+        <!-- Правая колонка с информацией -->
+        <div class="product-detail-info">
+            <h1 class="product-detail-title">{{ product.name }}</h1>
+            
+            <div class="product-detail-meta">
+                <span class="product-detail-article">Артикул: {{ product.article }}</span>
+                <span class="product-detail-category">{{ product.category }}</span>
+            </div>
+
+            <div class="product-detail-price-block">
+                <div class="product-detail-price">
+                    {{ product.price }} ₽
+                </div>
+                {% if product.discount > 0 %}
+                <div class="product-detail-discount">
+                    Скидка {{ product.discount }}%
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="product-detail-stock">
+                {% if product.stock > 0 %}
+                <span class="in-stock">✅ В наличии: {{ product.stock }} шт.</span>
+                {% else %}
+                <span class="out-of-stock">❌ Нет в наличии</span>
+                {% endif %}
+            </div>
+
+            <div class="product-detail-attributes">
+                <h3>Характеристики</h3>
+                <table class="attributes-table">
+                    <tr>
+                        <td>Поставщик:</td>
+                        <td>{{ product.supplier or '—' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Производитель:</td>
+                        <td>{{ product.manufacturer or '—' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Единица измерения:</td>
+                        <td>{{ product.unit or 'шт.' }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            {% if product.description %}
+            <div class="product-detail-description">
+                <h3>Описание</h3>
+                <p>{{ product.description }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Кнопки для администратора -->
+            {% if role == 'Администратор' %}
+            <div class="product-detail-actions">
+                <a href="/admin/products/edit/{{ product.id }}" class="admin-edit-btn">✏️ Редактировать товар</a>
+                <a href="/admin/products/delete/{{ product.id }}" 
+                   class="admin-delete-btn" 
+                   onclick="return confirm('Удалить товар {{ product.name }}?')">🗑️ Удалить товар</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

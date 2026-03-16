@@ -1,75 +1,74 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Заказ №{{ order.order_number }}</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <div class="detail-container">
-        <div class="header">
-            <h1>Заказ №{{ order.order_number }}</h1>
-            <div class="nav-links">
-                <a href="/orders" class="btn">← К списку заказов</a>
-                <a href="/catalog" class="btn">Каталог</a>
-                <a href="/logout" class="btn-logout">Выйти</a>
-            </div>
+{% extends "base.html" %}
+
+{% block title %}Заказ №{{ order.order_number }}{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-header">
+        <h1>Заказ №{{ order.order_number }}</h1>
+        <a href="/orders" class="btn">← К списку заказов</a>
+    </div>
+
+    <div class="order-info-grid">
+        <div class="info-card">
+            <h3>Информация о заказе</h3>
+            <p><strong>Дата заказа:</strong> {{ order.order_date[:10] }}</p>
+            <p><strong>Дата доставки:</strong> {{ order.delivery_date or 'Не указана' }}</p>
+            <p><strong>Статус:</strong> <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span></p>
+            <p><strong>Код получения:</strong> <code>{{ order.pickup_code }}</code></p>
         </div>
 
-        <div class="order-info">
-            <div class="info-block">
-                <h3>Информация о заказе</h3>
-                <p><strong>Дата заказа:</strong> {{ order.order_date[:10] }}</p>
-                <p><strong>Дата доставки:</strong> {{ order.delivery_date or 'Не указана' }}</p>
-                <p><strong>Статус:</strong> {{ order.status }}</p>
-                <p><strong>Код получения:</strong> {{ order.pickup_code }}</p>
-            </div>
-
-            <div class="info-block">
-                <h3>Клиент</h3>
-                <p><strong>ФИО:</strong> {{ order.client.full_name }}</p>
-                <p><strong>Логин:</strong> {{ order.client.login }}</p>
-            </div>
-
-            <div class="info-block">
-                <h3>Пункт выдачи</h3>
-                <p>{{ order.pickup_point.address }}</p>
-            </div>
+        <div class="info-card">
+            <h3>Клиент</h3>
+            <p><strong>ФИО:</strong> {{ order.client.full_name if order.client else 'Не указан' }}</p>
+            <p><strong>Логин:</strong> {{ order.client.login if order.client else 'Не указан' }}</p>
         </div>
 
+        <div class="info-card">
+            <h3>Пункт выдачи</h3>
+            <p>{{ order.pickup_point.address if order.pickup_point else 'Не указан' }}</p>
+        </div>
+    </div>
+
+    <div class="order-items-section">
+        <h2>Состав заказа</h2>
+        
+        {% if items %}
         <table class="items-table">
-    <thead>
-        <tr>
-            <th>Товар</th>
-            <th>Цена</th>
-            <th>Количество</th>
-            <th>Сумма</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in items %}
-        <tr>
-            <td>{{ item.product.name if item.product else 'Товар не найден' }}</td>
-            <td>{{ "%.2f"|format(item.price_with_discount|float) }} ₽</td>
-            <td>{{ item.quantity }}</td>  
-            <td>{{ "%.2f"|format((item.price_with_discount|float * item.quantity|int)) }} ₽</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    <tfoot>
-        <tr>
-            <th colspan="3">Итого:</th>
-            <th>{{ "%.2f"|format(total|float) }} ₽</th>
-        </tr>
-    </tfoot>
-</table>
-        </div>
-
-        {% if is_admin %}
-        <div class="admin-actions">
-            <a href="/orders/edit/{{ order.id }}" class="btn-edit">✏️ Редактировать заказ</a>
-        </div>
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Цена</th>
+                    <th>Количество</th>
+                    <th>Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.product.name if item.product else 'Товар не найден' }}</td>
+                    <td>{{ "%.2f"|format(item.price_with_discount|float) }} ₽</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ "%.2f"|format((item.price_with_discount|float * item.quantity|int)) }} ₽</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3">Итого:</th>
+                    <th>{{ "%.2f"|format(total|float) }} ₽</th>
+                </tr>
+            </tfoot>
+        </table>
+        {% else %}
+        <p class="no-data">В заказе нет товаров</p>
         {% endif %}
     </div>
-</body>
-</html>
+
+    {% if session.get('user_role') == 'Администратор' %}
+    <div class="detail-actions">
+        <a href="/orders/edit/{{ order.id }}" class="btn-edit">✏️ Редактировать заказ</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
