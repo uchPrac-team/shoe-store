@@ -1,101 +1,88 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Каталог товаров - ООО "Обувь"</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <div class="catalog-container">
-        <!-- Шапка -->
-        <div class="header">
-            <img src="/static/logo.png" alt="ООО Обувь" class="logo">
-            <h1>ООО "Обувь" - Каталог товаров</h1>
-            <div class="user-info">
-                <span>Вы вошли как: <strong>{{ role }}</strong></span>
-                <a href="/logout" class="btn-logout">Выйти</a>
-            </div>
-        </div>
+{% extends "base.html" %}
 
-        <!-- Фильтры (только для менеджера и админа) -->
-        {% if role in ['Менеджер', 'Администратор'] %}
-        <div class="filters">
-            <form method="GET" action="/catalog">
-                <div class="filter-group">
-                    <input type="text" name="search" placeholder="Поиск по названию" 
-                           value="{{ current_search }}" class="search-input">
-                    
-                    <select name="category" class="filter-select">
-                        <option value="">Все категории</option>
-                        {% for cat in categories %}
-                        <option value="{{ cat }}" {% if cat == current_category %}selected{% endif %}>
-                            {{ cat }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    
-                    <select name="sort" class="filter-select">
-                        <option value="name" {% if current_sort == 'name' %}selected{% endif %}>
-                            По названию
-                        </option>
-                        <option value="price" {% if current_sort == 'price' %}selected{% endif %}>
-                            По цене
-                        </option>
-                        <option value="discount" {% if current_sort == 'discount' %}selected{% endif %}>
-                            По скидке
-                        </option>
-                    </select>
-                    
-                    <button type="submit" class="btn-filter">Применить</button>
-                </div>
-            </form>
-        </div>
-        {% endif %}
+{% block title %}Каталог товаров{% endblock %}
 
-        <!-- Список товаров -->
-        <div class="products-grid">
-            {% for product in products %}
-            <div class="product-card" {% if product.discount > 15 %}style="background-color: #2E8B57;"{% endif %}>
+{% block content %}
+<div class="catalog-container">
+    <h1>Каталог товаров</h1>
+
+    <!-- Фильтры (только для менеджера и админа) -->
+    {% if session.get('user_role') in ['Менеджер', 'Администратор'] %}
+    <div class="filters-bar">
+        <form method="GET" action="/catalog" class="filters-form">
+            <input type="text" name="search" placeholder="Поиск по названию" 
+                   value="{{ current_search }}" class="filter-input">
+            
+            <select name="category" class="filter-select">
+                <option value="">Все категории</option>
+                {% for cat in categories %}
+                <option value="{{ cat }}" {% if cat == current_category %}selected{% endif %}>
+                    {{ cat }}
+                </option>
+                {% endfor %}
+            </select>
+            
+            <select name="sort" class="filter-select">
+                <option value="name" {% if current_sort == 'name' %}selected{% endif %}>По названию</option>
+                <option value="price" {% if current_sort == 'price' %}selected{% endif %}>По цене</option>
+                <option value="discount" {% if current_sort == 'discount' %}selected{% endif %}>По скидке</option>
+            </select>
+            
+            <button type="submit" class="filter-btn">Применить</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Список товаров -->
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card {% if product.discount > 15 %}high-discount{% endif %}">
+            <!-- Ссылка на страницу товара (вся карточка кликабельна) -->
+            <a href="/product/{{ product.id }}" class="product-card-link">
                 <div class="product-image">
-                    {% if product.photo and product.photo != 'null' and product.photo != '' %}
+                    {% if product.photo %}
                     <img src="/static/images/{{ product.photo }}" alt="{{ product.name }}">
                     {% else %}
-                    <img src="/static/images/no-image.png" alt="Нет изображения" class="default-image">
+                    <div class="no-image">📷</div>
                     {% endif %}
                 </div>
                 
-                <div class="product-info">
+                <div class="product-details">
                     <h3>{{ product.name }}</h3>
-                    <p class="article">Артикул: {{ product.article }}</p>
-                    <p class="category">{{ product.category }}</p>
+                    <div class="product-meta">
+                        <span class="product-article">{{ product.article }}</span>
+                        <span class="product-category">{{ product.category }}</span>
+                    </div>
                     
-                    <div class="price-block">
+                    <div class="product-price">
                         <span class="price">{{ product.price }} ₽</span>
                         {% if product.discount > 0 %}
-                        <span class="discount">-{{ product.discount }}%</span>
+                        <span class="discount-badge">-{{ product.discount }}%</span>
                         {% endif %}
                     </div>
                     
-                    <p class="stock">В наличии: {{ product.stock }} шт.</p>
+                    <div class="product-stock">
+                        В наличии: {{ product.stock }} шт.
+                    </div>
                     
                     {% if product.description %}
-                    <p class="description">{{ product.description[:50] }}...</p>
-                    {% endif %}
-                    
-                    <!-- Кнопки для администратора -->
-                    {% if role == 'Администратор' %}
-                <div class="admin-actions">
-                    <a href="/admin/products/edit/{{ product.id }}" class="btn-edit">✏️ Редактировать</a>
-                    <a href="/admin/products/delete/{{ product.id }}" 
-                    class="btn-delete" 
-                    onclick="return confirm('Удалить товар?')">🗑️ Удалить</a>
-                </div>
+                    <div class="product-description">{{ product.description[:30] }}...</div>
                     {% endif %}
                 </div>
+            </a>
+            
+            <!-- Кнопки администратора (поверх ссылки) -->
+            {% if session.get('user_role') == 'Администратор' %}
+            <div class="product-actions">
+                <a href="/admin/products/edit/{{ product.id }}" class="edit-btn" title="Редактировать" onclick="event.stopPropagation()">✏️</a>
+                <a href="/admin/products/delete/{{ product.id }}" 
+                   class="delete-btn" 
+                   onclick="return confirm('Удалить товар?')"
+                   title="Удалить">🗑️</a>
             </div>
-            {% endfor %}
+            {% endif %}
         </div>
+        {% endfor %}
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,78 +1,64 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Управление заказами</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <div class="admin-container">
-        <div class="header">
-            <h1>Управление заказами</h1>
-            <div class="admin-nav">
-                <a href="/catalog" class="btn">Каталог</a>
-                {% if is_admin %}
-                <a href="/orders/create" class="btn btn-primary">+ Новый заказ</a>
+{% extends "base.html" %}
+
+{% block title %}Управление заказами{% endblock %}
+
+{% block content %}
+<div class="orders-container">
+    <h1>Управление заказами</h1>
+
+    {% if orders %}
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Клиент</th>
+                <th>Дата заказа</th>
+                <th>Дата доставки</th>
+                <th>Пункт выдачи</th>
+                <th>Сумма</th>
+                <th>Статус</th>
+                <th>Код</th>
+                <th></th>
+                {% if session.get('user_role') == 'Администратор' %}
+                <th></th>
                 {% endif %}
-                <a href="/logout" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="flash-message">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>№ заказа</th>
-                    <th>Клиент</th>
-                    <th>Дата заказа</th>
-                    <th>Дата доставки</th>
-                    <th>Пункт выдачи</th>
-                    <th>Сумма</th>
-                    <th>Статус</th>
-                    <th>Код получения</th>
-                    <th>Просмотр</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr>
-                    <td>{{ order.order_number }}</td>
-                    <td>{{ order.client_name or 'Не указан' }}</td>
-                    <td>{{ order.order_date[:10] }}</td>
-                    <td>{{ order.delivery_date or 'Не указана' }}</td>
-                    <td>{{ order.pickup_address or 'Не указан' }}</td>
-                    <td>{{ order.total|round(2) }} ₽</td>
-                    <td>
-                        <form action="/orders/status/{{ order.id }}" method="POST" style="display: inline;">
-                            <select name="status" onchange="this.form.submit()" 
-                                    {% if not is_admin and order.status == 'Завершен' %}disabled{% endif %}>
-                                <option value="Новый" {% if order.status == 'Новый' %}selected{% endif %}>Новый</option>
-                                <option value="Завершен" {% if order.status == 'Завершен' %}selected{% endif %}>Завершен</option>
-                                <option value="Отменен" {% if order.status == 'Отменен' %}selected{% endif %}>Отменен</option>
-                            </select>
-                        </form>
-                    </td>
-                    <td>{{ order.pickup_code }}</td>
-                    <td>
-                        <a href="/orders/{{ order.id }}" class="btn-view">👁️</a>
-                        {% if is_admin %}
-                        <a href="/orders/edit/{{ order.id }}" class="btn-edit">✏️</a>
-                        <a href="/orders/delete/{{ order.id }}" 
-                           class="btn-delete" 
-                           onclick="return confirm('Удалить заказ?')">🗑️</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.order_number }}</td>
+                <td>{{ order.client_name or '—' }}</td>
+                <td>{{ order.order_date[:10] }}</td>
+                <td>{{ order.delivery_date or '—' }}</td>
+                <td class="address-cell" title="{{ order.pickup_address }}">
+                    {{ order.pickup_address[:30] + '...' if order.pickup_address and order.pickup_address|length > 30 else order.pickup_address or '—' }}
+                </td>
+                <td class="price-cell">{{ "%.2f"|format(order.total|float) }} ₽</td>
+                <td>
+                    <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+                </td>
+                <td><code>{{ order.pickup_code }}</code></td>
+                <td>
+                    <a href="/orders/{{ order.id }}" class="view-btn" title="Просмотр">👁️</a>
+                </td>
+                {% if session.get('user_role') == 'Администратор' %}
+                <td>
+                    <a href="/orders/edit/{{ order.id }}" class="edit-btn" title="Редактировать">✏️</a>
+                    <a href="/orders/delete/{{ order.id }}" 
+                       class="delete-btn" 
+                       onclick="return confirm('Удалить заказ?')"
+                       title="Удалить">🗑️</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>Заказы не найдены</p>
     </div>
-</body>
-</html>
+    {% endif %}
+</div>
+{% endblock %}

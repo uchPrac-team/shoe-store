@@ -1,51 +1,51 @@
 ﻿<!DOCTYPE html>
-<html lang='ru'>
+<html lang="ru">
 <head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>Вход - ООО 'Обувь'</title>
-    <link rel='stylesheet' href='/static/css/style.css'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - ООО "Обувь"</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class='container'>
-        <div class='header'>
-            <img src='/static/logo.png' alt='ООО Обувь' class='logo'>
-            <h1>ООО 'Обувь'</h1>
-        </div>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <img src="/static/logo.png" alt="ООО Обувь" class="auth-logo">
+                <h1>ООО "Обувь"</h1>
+            </div>
 
-        <div class='login-form'>
-            <h2>Вход в систему</h2>
-            
+            <!-- Flash-сообщения об ошибках -->
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
-                    <div class='error-message'>
+                    <div class="auth-error">
                         {% for message in messages %}
                             {{ message }}
                         {% endfor %}
                     </div>
                 {% endif %}
             {% endwith %}
-            
-            <form method='POST' action='/login'>
-                <div class='form-group'>
-                    <label for='login'>Логин (email):</label>
-                    <input type='email' id='login' name='login' required 
-                           placeholder='Введите ваш email'>
+
+            <form method="POST" action="/login" class="auth-form">
+                <div class="form-group">
+                    <label for="login">Логин (email):</label>
+                    <input type="email" id="login" name="login" required 
+                           placeholder="Введите ваш email">
                 </div>
-                
-                <div class='form-group'>
-                    <label for='password'>Пароль:</label>
-                    <input type='password' id='password' name='password' required 
-                           placeholder='Введите пароль'>
+
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="Введите пароль">
                 </div>
-                
-                <button type='submit' class='btn btn-primary'>Войти</button>
+
+                <button type="submit" class="auth-btn">Войти</button>
             </form>
-            
-            <div class='guest-access'>
-                <p>Или продолжить как:</p>
-                <a href='/guest' class='btn btn-secondary'>Гость</a>
+
+            <div class="auth-divider">
+                <span>или</span>
             </div>
+
+            <a href="/guest" class="guest-btn">Продолжить как гость</a>
         </div>
     </div>
 </body>

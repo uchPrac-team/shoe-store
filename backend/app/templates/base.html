@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ООО "Обувь"{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Верхняя навигационная панель -->
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div class="top-bar-left">
+                <img src="/static/logo.png" alt="Обувь" class="top-logo">
+                <span class="shop-name">ООО "Обувь"</span>
+            </div>
+            
+            <div class="top-bar-center">
+                <a href="/catalog" class="top-link {% if request.path == '/catalog' %}active{% endif %}">Каталог</a>
+                
+                {% if session.get('user_role') in ['Менеджер', 'Администратор'] %}
+                <a href="/orders" class="top-link {% if request.path.startswith('/orders') %}active{% endif %}">Заказы</a>
+                {% endif %}
+                
+                {% if session.get('user_role') == 'Администратор' %}
+                <a href="/admin/products" class="top-link {% if request.path == '/admin/products' %}active{% endif %}">Товары</a>
+                <a href="/orders/create" class="top-link new-order">+ Новый заказ</a>
+                {% endif %}
+            </div>
+            
+            <div class="top-bar-right">
+                <span class="user-badge">{{ session.get('user_role', 'Гость') }}</span>
+                <span class="user-name">{{ session.get('user_name', '') }}</span>
+                <a href="/logout" class="logout-btn">Выйти</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="content-wrapper">
+        <!-- Flash-сообщения -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
